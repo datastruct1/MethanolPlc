@@ -1,0 +1,872 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Methanol_PLC.ViewModels"
+        xmlns:lv="using:LiveChartsCore.SkiaSharpView.Avalonia"
+        xmlns:local="using:Methanol_PLC.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        WindowStartupLocation="CenterScreen"
+        Width="1600" Height="900"
+        x:Class="Methanol_PLC.Views.MainView"
+        Title="甲醇燃料 PLC 控制单元模拟器"
+        Background="#1a1a2e">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- 顶部工具栏 -->
+        <Border Grid.Row="0" Background="#2d2d44" Padding="10">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                    <Button Content="▶ 启动" Command="{Binding StartCommand}"
+                            Background="#4caf50" Foreground="White" FontWeight="Bold" />
+                    <Button Content="⏹ 停止" Command="{Binding StopCommand}"
+                            Background="#f44336" Foreground="White" FontWeight="Bold" />
+                    <Button Content="↺ 复位" Command="{Binding ResetCommand}"
+                            Background="#ff9800" Foreground="White" FontWeight="Bold" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="扫描周期: 500ms" VerticalAlignment="Center" Foreground="White" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="扫描计数:" VerticalAlignment="Center" Foreground="White" />
+                    <TextBlock Text="{Binding ScanCount}" VerticalAlignment="Center"
+                               Foreground="#00ff00" FontWeight="Bold" FontFamily="Consolas" />
+                </StackPanel>
+
+                <Border Grid.Column="6"
+                        Background="{Binding IsRunning, Converter={StaticResource BoolToStatusConverter}}"
+                        CornerRadius="4" Padding="8,4" Margin="10,0,0,0">
+                    <TextBlock Text="{Binding IsRunning, Converter={StaticResource BoolToRunningTextConverter}}"
+                               Foreground="White" FontWeight="Bold" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 主内容区 -->
+        <Grid Grid.Row="1" ColumnDefinitions="300,*,350">
+            <!-- 左侧：实时数据面板 -->
+            <ScrollViewer Grid.Column="0" Background="#252538">
+                <StackPanel Spacing="10" Margin="10">
+                      <!-- 加注系统 -->
+                    <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="加注系统" FontWeight="Bold" Foreground="White" FontSize="14" />
+
+                            <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                <StackPanel Grid.Column="0">
+                                    <Button Content="加注泵" Command="{Binding ToggleValveCommand}"
+                                            CommandParameter="PUMP-501" IsEnabled="{Binding IsRunning}"
+                                            CornerRadius="4" Padding="6,2" Foreground="White" FontSize="11"
+                                            Background="{Binding Pump501Running,Converter={StaticResource BoolToValveConverter}}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="流量:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Fit501Flow, StringFormat='{}{0:F1} L/min'}"
+                                               Foreground="White" FontWeight="Bold" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*" Margin="0,10,0,0">
+                                <Button Grid.Column="0" Content="总阀" Command="{Binding ToggleValveCommand}"
+                                        CommandParameter="XV-501" IsEnabled="{Binding IsRunning}"
+                                        Background="{Binding Xv501Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="10" Margin="2" />
+                                <Button Grid.Column="1" Content="遥控阀" Command="{Binding ToggleValveCommand}"
+                                        CommandParameter="XV-502" IsEnabled="{Binding IsRunning}"
+                                        Background="{Binding Xv502Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="10" Margin="2" />
+                                <Button Grid.Column="2" Content="透气阀" Command="{Binding ToggleValveCommand}"
+                                        CommandParameter="XV-503" IsEnabled="{Binding IsRunning}"
+                                        Background="{Binding Xv503Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="10" Margin="2" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Grid ColumnDefinitions="*,*">
+                        <!-- 燃料舱 2 -->
+                        <Border Background="#2d2d44" CornerRadius="8" Margin="0,0,5,0" Padding="12">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,Auto">
+
+                                <!-- ===== 左侧列 ===== -->
+                                <!-- 左上：标题 -->
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="燃料舱1" FontWeight="Bold" Foreground="White" FontSize="12"
+                                           Margin="0,0,8,0" />
+
+                                <!-- 左中：竖直进度条（* 行确保高度被严格约束并撑满） -->
+                                <ProgressBar Grid.Row="1" Grid.Column="0"
+                                             Orientation="Vertical"
+                                             Width="20"
+                                             Minimum="0" Maximum="100"
+                                             Value="{Binding Lt101}"
+                                             VerticalAlignment="Stretch"
+                                             HorizontalAlignment="Left"
+                                             Margin="0,8,8,8">
+                                    <ProgressBar.Styles>
+                                        <Style Selector="ProgressBar:vertical /template/ Rectangle#PART_Indicator">
+                                            <Setter Property="Fill" Value="Brown" />
+                                        </Style>
+                                        <Style Selector="ProgressBar:vertical /template/ Border#PART_Track">
+                                            <Setter Property="Background" Value="#3d3d54" />
+                                        </Style>
+                                    </ProgressBar.Styles>
+                                </ProgressBar>
+
+                                <!-- 左下：液位百分比 -->
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="{Binding Lt101, StringFormat='{}{0:F1}%'}"
+                                           Foreground="White" HorizontalAlignment="Left"
+                                           Margin="0,0,8,0" />
+
+                                <!-- ===== 右侧列 ===== -->
+                                <!-- 右上：参数信息（液位、压力、O₂） -->
+                                <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="4,0,0,0">
+                                    <TextBlock Text="LT101:" Foreground="#aaa" FontSize="11"/>
+                                    <TextBlock Text="{Binding Lt101, StringFormat='{}{0:F1}%'}" 
+                                               Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                                    <TextBlock Text="压力:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Pt101, StringFormat='{}{0:F2}MPa'}"
+                                               Foreground="White" FontSize="12" FontWeight="Bold" Margin="0,0,0,8" />
+
+                                    <TextBlock Text="O₂:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Ot101, StringFormat='{}{0:F1}%'}"
+                                               Foreground="White" FontWeight="Bold" />
+                                    <Button Grid.Column="0" Content="主阀" IsEnabled="{Binding IsRunning}"
+                                            Command="{Binding ToggleValveCommand}" CommandParameter="XV-101"
+                                            Background="{Binding Xv101Open, Converter={StaticResource BoolToValveConverter}}"
+                                            Foreground="White" FontSize="11" Margin="3" />
+                                    <Button Grid.Column="1" Content="加注阀" IsEnabled="{Binding IsRunning}"
+                                            Command="{Binding ToggleValveCommand}" CommandParameter="XV-102"
+                                            Background="{Binding Xv102Open, Converter={StaticResource BoolToValveConverter}}"
+                                            Foreground="White" FontSize="10" Margin="3" />
+                                </StackPanel>
+
+                                <!-- 右下：阀门按钮 -->
+                                <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*" Margin="4,0,0,0">
+                                    
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" Background="#2d2d44" CornerRadius="8" Margin="5,0,0,0" Padding="12">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*,Auto">
+
+                                <!-- ===== 左侧列 ===== -->
+                                <!-- 左上：标题 -->
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="燃料舱2" FontWeight="Bold" Foreground="White" FontSize="12"
+                                           Margin="0,0,8,0" />
+
+                                <!-- 左中：竖直进度条（* 行确保高度被严格约束并撑满） -->
+                                <ProgressBar Grid.Row="1" Grid.Column="0"
+                                             Orientation="Vertical"
+                                             Width="20"
+                                             Minimum="0" Maximum="100"
+                                             Value="{Binding Lt201}"
+                                             VerticalAlignment="Stretch"
+                                             HorizontalAlignment="Left"
+                                             Margin="0,8,8,8">
+                                    <ProgressBar.Styles>
+                                        <Style Selector="ProgressBar:vertical /template/ Rectangle#PART_Indicator">
+                                            <Setter Property="Fill" Value="Brown" />
+                                        </Style>
+                                        <Style Selector="ProgressBar:vertical /template/ Border#PART_Track">
+                                            <Setter Property="Background" Value="#3d3d54" />
+                                        </Style>
+                                    </ProgressBar.Styles>
+                                </ProgressBar>
+
+                                <!-- 左下：液位百分比 -->
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="{Binding Lt201, StringFormat='{}{0:F1}%'}"
+                                           Foreground="White" HorizontalAlignment="Left"
+                                           Margin="0,0,8,0" />
+
+                                <!-- ===== 右侧列 ===== -->
+                                <!-- 右上：参数信息（液位、压力、O₂） -->
+                                <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="4,0,0,0">
+                                    <TextBlock Text="LT201:" Foreground="#aaa" FontSize="11"/>
+                                    <TextBlock Text="{Binding Lt201, StringFormat='{}{0:F1}%'}" 
+                                               Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                                    <TextBlock Text="压力:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Pt201, StringFormat='{}{0:F2}MPa'}"
+                                               Foreground="White" FontSize="12" FontWeight="Bold" Margin="0,0,0,8" />
+
+                                    <TextBlock Text="O₂:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Ot201, StringFormat='{}{0:F1}%'}"
+                                               Foreground="White" FontWeight="Bold" />
+                                    <Button Grid.Column="0" Content="主阀" IsEnabled="{Binding IsRunning}"
+                                            Command="{Binding ToggleValveCommand}" CommandParameter="XV-201"
+                                            Background="{Binding Xv201Open, Converter={StaticResource BoolToValveConverter}}"
+                                            Foreground="White" FontSize="11" Margin="3" />
+                                    <Button Grid.Column="1" Content="加注阀" IsEnabled="{Binding IsRunning}"
+                                            Command="{Binding ToggleValveCommand}" CommandParameter="XV-202"
+                                            Background="{Binding Xv202Open, Converter={StaticResource BoolToValveConverter}}"
+                                            Foreground="White" FontSize="10" Margin="3" />
+                                </StackPanel>
+
+                                <!-- 右下：阀门按钮 -->
+                                <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*" Margin="4,0,0,0">
+                                    
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!--<StackPanel>
+                            <TextBlock Text="燃料舱 1" FontWeight="Bold" Foreground="White" FontSize="14"/>
+
+                            ~1~ 液位条 @1@
+                            <Grid RowDefinitions="Auto,Auto,Auto" Margin="0,10,0,0">
+                                <TextBlock Grid.Row="0" Text="液位:" Foreground="#aaa"/>
+                                <ProgressBar Grid.Row="1" Value="{Binding Lt101}" Minimum="0" Maximum="100"
+                                             Width="20" Margin="0,5" Orientation="Vertical"/>
+                                <TextBlock Grid.Row="2" Text="{Binding Lt101, StringFormat='{}{0:F1}%'}"
+                                           Foreground="White" HorizontalAlignment="Right"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="压力:" Foreground="#aaa" FontSize="11"/>
+                                    <TextBlock Text="{Binding Pt101, StringFormat='{}{0:F2} MPa'}"
+                                               Foreground="White" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="O₂:" Foreground="#aaa" FontSize="11"/>
+                                    <TextBlock Text="{Binding Ot101, StringFormat='{}{0:F1}%'}"
+                                               Foreground="White" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                <Button Grid.Column="0" Content="主阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-101"
+                                        Background="{Binding Xv101Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="11" Margin="5"/>
+                                <Button Grid.Column="1" Content="加注阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-102"
+                                        Background="{Binding Xv102Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="11" Margin="5"/>
+                            </Grid>
+                        </StackPanel>-->
+
+
+                    <!-- 燃料舱 2 -->
+                    <!--<Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="燃料舱 2" FontWeight="Bold" Foreground="White" FontSize="14" />
+
+                            <Grid RowDefinitions="Auto,Auto,Auto" Margin="0,10,0,0">
+                                <TextBlock Grid.Row="0" Text="液位:" Foreground="#aaa" />
+                                <ProgressBar Grid.Row="1" Value="{Binding Lt201}" Minimum="0" Maximum="100"
+                                             Height="20" Margin="0,5" />
+                                <TextBlock Grid.Row="2" Text="{Binding Lt201, StringFormat='{}{0:F1}%'}"
+                                           Foreground="White" HorizontalAlignment="Right" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="压力:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Pt201, StringFormat='{}{0:F2} MPa'}"
+                                               Foreground="White" FontWeight="Bold" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="O₂:" Foreground="#aaa" FontSize="11" />
+                                    <TextBlock Text="{Binding Ot201, StringFormat='{}{0:F1}%'}"
+                                               Foreground="White" FontWeight="Bold" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                <Button Grid.Column="0" Content="主阀" Command="{Binding ToggleValveCommand}"
+                                        CommandParameter="XV-201"
+                                        Background="{Binding Xv201Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="11" Margin="5" />
+                                <Button Grid.Column="1" Content="加注阀" Command="{Binding ToggleValveCommand}"
+                                        CommandParameter="XV-202"
+                                        Background="{Binding Xv202Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="11" Margin="5" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>-->
+
+                    <!-- 发动机 1 -->
+                    <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="发动机 1" FontWeight="Bold" Foreground="White"
+                                           FontSize="14" />
+                                <Button Grid.Column="1" IsEnabled="{Binding IsRunning}"
+                                        Content="{Binding Eng601Running, Converter={StaticResource BoolToStartStopTextConverter}}"
+                                        Command="{Binding ToggleEngineCommand}" CommandParameter="ENG-601"
+                                        Background="{Binding Eng601Running, Converter={StaticResource BoolToStartStopBgConverter}}"
+                                        Foreground="White" FontSize="11" Padding="10,5" />
+                            </Grid>
+
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                                <Ellipse
+                                    Fill="{Binding Eng601Running, Converter={StaticResource BoolToStatusConverter}}"
+                                    Width="12" Height="12" />
+                                <TextBlock
+                                    Text="{Binding Eng601Running, Converter={StaticResource BoolToRunningTextConverter}}"
+                                    Foreground="White" FontWeight="Bold" />
+                            </StackPanel>
+
+                            <UniformGrid Columns="4" Margin="0,10,0,0">
+                                <Button Content="主甲醇阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-601"
+                                        Background="{Binding Xv601Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}"
+                                        Foreground="White" FontSize="10" Margin="2" />
+                                <Button Content="进气阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-602"
+                                        Background="{Binding Xv602Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}"
+                                        Foreground="White" FontSize="10" Margin="2" />
+                                <Button Content="排气阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-603"
+                                        Background="{Binding Xv603Open, Converter={StaticResource BoolToValveConverter}}"
+                                        Foreground="White" FontSize="10" Margin="2"  IsEnabled="{Binding IsRunning}"/>
+                                <Button Content="扫除阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-604"
+                                        Background="{Binding Xv604Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}" Foreground="White" FontSize="10" Margin="2" />
+                            </UniformGrid>
+
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0"
+                                        IsVisible="{Binding Eng601Flame}">
+                                <TextBlock Text="⚠ 失火" Foreground="Red" FontWeight="Bold" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5,0,0"
+                                        IsVisible="{Binding Eng601OilMist}">
+                                <TextBlock Text="⚠ 油雾" Foreground="Orange" FontWeight="Bold" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 发动机 2 -->
+                    <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="发动机 2" FontWeight="Bold" Foreground="White"
+                                           FontSize="14" />
+                                <Button Grid.Column="1" IsEnabled="{Binding IsRunning}"
+                                        Content="{Binding Eng701Running, Converter={StaticResource BoolToStartStopTextConverter}}"
+                                        Command="{Binding ToggleEngineCommand}" CommandParameter="ENG-701"
+                                        Background="{Binding Eng701Running, Converter={StaticResource BoolToStartStopBgConverter}}"
+                                        Foreground="White" FontSize="11" Padding="10,5" />
+                            </Grid>
+
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                                <Ellipse
+                                    Fill="{Binding Eng701Running, Converter={StaticResource BoolToStatusConverter}}"
+                                    Width="12" Height="12" />
+                                <TextBlock
+                                    Text="{Binding Eng701Running, Converter={StaticResource BoolToRunningTextConverter}}"
+                                    Foreground="White" FontWeight="Bold" />
+                            </StackPanel>
+
+                            <UniformGrid Columns="4" Margin="0,10,0,0">
+                                <Button Content="主甲醇阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-701"
+                                        Background="{Binding Xv701Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}" Foreground="White" FontSize="10" Margin="2" />
+                                <Button Content="进气阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-702"
+                                        Background="{Binding Xv702Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}" Foreground="White" FontSize="10" Margin="2" />
+                                <Button Content="排气阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-703"
+                                        Background="{Binding Xv703Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}" Foreground="White" FontSize="10" Margin="2" />
+                                <Button Content="扫除阀" Command="{Binding ToggleValveCommand}" CommandParameter="XV-704"
+                                        Background="{Binding Xv704Open, Converter={StaticResource BoolToValveConverter}}"
+                                        IsEnabled="{Binding IsRunning}" Foreground="White" FontSize="10" Margin="2" />
+                            </UniformGrid>
+
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0"
+                                        IsVisible="{Binding Eng701Flame}">
+                                <TextBlock Text="⚠ 失火" Foreground="Red" FontWeight="Bold" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5,0,0"
+                                        IsVisible="{Binding Eng701OilMist}">
+                                <TextBlock Text="⚠ 油雾" Foreground="Orange" FontWeight="Bold" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                 
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 中间：Tab 面板 -->
+            <Grid Grid.Column="1" Margin="10">
+                <TabControl Background="#252538">
+                    <!-- Tab 1: 报警列表 -->
+                    <TabItem Header="报警列表">
+                        <Grid RowDefinitions="Auto,Auto,*">
+                            <!-- 声光报警指示器 -->
+                            <Border Grid.Row="0"
+                                    Background="{Binding HasNewAlarm, Converter={StaticResource BoolToAlarmBgConverter}}"
+                                    Padding="10"
+                                    IsVisible="{Binding HasNewAlarm}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Grid.Column="0"
+                                             Fill="{Binding AlarmFlashState, Converter={StaticResource BoolToAlarmFlashConverter}}"
+                                             Width="20" Height="20" Margin="0,0,10,0"/>
+                                    <TextBlock Grid.Column="1" Text="⚠ 新报警！"
+                                               Foreground="White" FontWeight="Bold" FontSize="16"
+                                               VerticalAlignment="Center"/>
+                                    <Button Grid.Column="2" Content="消音"
+                                            Command="{Binding SilenceAlarmsCommand}"
+                                            Background="#ff9800" Foreground="White" Padding="15,5"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- 报警统计 -->
+                            <Border Grid.Row="1" Background="#2d2d44" Padding="10">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                        <TextBlock Text="当前报警:" Foreground="#aaa" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Alarms.Count}" Foreground="Red" FontWeight="Bold" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" Margin="20,0,0,0">
+                                        <TextBlock Text="未确认:" Foreground="#aaa" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding UnacknowledgedCount}" Foreground="#ff9800" FontWeight="Bold" />
+                                    </StackPanel>
+                                    <Button Grid.Column="3" Content="全部确认"
+                                            Command="{Binding AcknowledgeAllAlarmsCommand}"
+                                            Background="#4caf50" Foreground="White" Margin="5,0"/>
+                                </Grid>
+                            </Border>
+
+                            <ListBox Grid.Row="1" ItemsSource="{Binding Alarms}"
+                                     Background="#252538" Foreground="White"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding Acknowledged, Converter={StaticResource BoolToAlarmItemBgConverter}}"
+                                                CornerRadius="4" Padding="10" Margin="2">
+                                            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto">
+                                                <Ellipse Grid.Column="0"
+                                                         Fill="{Binding Acknowledged, Converter={StaticResource BoolToAlarmStatusConverter}}"
+                                                         Width="12" Height="12" Margin="0,0,10,0"
+                                                         VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}'}"
+                                                           Foreground="#aaa" Width="80" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Tag}"
+                                                           Foreground="#ff9800" Width="80" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding Message}"
+                                                           Foreground="White" VerticalAlignment="Center" Margin="10,0"/>
+                                                <Button Grid.Column="4"
+                                                        Command="{Binding DataContext.AcknowledgeSingleAlarmCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                        CommandParameter="{Binding}"
+                                                        IsEnabled="{Binding DataContext.IsRunning, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                        Content="{Binding Acknowledged, Converter={StaticResource BoolToConfirmTextConverter}}"
+                                                        Background="{Binding Acknowledged, Converter={StaticResource BoolToConfirmBgConverter}}"
+                                                        Foreground="White" FontSize="11" Padding="15,5"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- Tab 2: 连锁状态 -->
+                    <TabItem Header="连锁状态">
+                        <Grid RowDefinitions="Auto,*">
+                            <Border Grid.Row="0" Background="#2d2d44" Padding="10">
+                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                    <TextBlock Grid.Column="0" Text="安全连锁规则" Foreground="White" FontWeight="Bold" />
+                                    <Button Grid.Column="1" Content="全部启用" Background="#4caf50" Foreground="White"
+                                            Margin="5,0" />
+                                    <Button Grid.Column="2" Content="全部禁用" Background="#f44336" Foreground="White"
+                                            Margin="5,0" />
+                                </Grid>
+                            </Border>
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding Rules}"
+                                      AutoGenerateColumns="False" IsReadOnly="True"
+                                      Background="#252538" Foreground="White"
+                                      GridLinesVisibility="Horizontal">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="优先级" Binding="{Binding Priority}" Width="80" />
+                                    <DataGridTextColumn Header="连锁名称" Binding="{Binding Name}" Width="150" />
+                                    <DataGridTemplateColumn Header="触发" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Ellipse
+                                                    Fill="{Binding Triggered, Converter={StaticResource BoolToStatusConverter}}"
+                                                    Width="12" Height="12" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="启用" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Ellipse
+                                                    Fill="{Binding Enabled, Converter={StaticResource BoolToStatusConverter}}"
+                                                    Width="12" Height="12" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="条件" Binding="{Binding Condition}" Width="*" />
+                                    <DataGridTextColumn Header="最后触发" Binding="{Binding LastTriggered}" Width="120" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                        </Grid>
+                    </TabItem>
+
+                    <!-- Tab 3: 故障注入 -->
+                    <TabItem Header="故障注入">
+                        <ScrollViewer Background="#252538">
+                            <StackPanel Spacing="15" Margin="15">
+                                <!-- 发动机1 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="发动机 1" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ENG-601_FLAME 失火探测" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button
+                                                    Content="{Binding Eng601Flame, Converter={StaticResource BoolToOnOffConverter}}"
+                                                    Command="{Binding InjectFaultCommand}"
+                                                    CommandParameter="ENG-601_FLAME" IsEnabled="{Binding IsRunning}"
+                                                    Background="{Binding Eng601Flame, Converter={StaticResource BoolToValveConverter}}"
+                                                    Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ENG-601_OILMIST 油雾探测" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button
+                                                    Content="{Binding Eng601OilMist, Converter={StaticResource BoolToOnOffConverter}}"
+                                                    Command="{Binding InjectFaultCommand}"
+                                                    CommandParameter="ENG-601_OILMIST" IsEnabled="{Binding IsRunning}"
+                                                    Background="{Binding Eng601OilMist, Converter={StaticResource BoolToValveConverter}}"
+                                                    Foreground="White" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 发动机2 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="发动机 2" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ENG-701_FLAME 失火探测" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button
+                                                    Content="{Binding Eng701Flame, Converter={StaticResource BoolToOnOffConverter}}"
+                                                    Command="{Binding InjectFaultCommand}"
+                                                    CommandParameter="ENG-701_FLAME" IsEnabled="{Binding IsRunning}"
+                                                    Background="{Binding Eng701Flame, Converter={StaticResource BoolToValveConverter}}"
+                                                    Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ENG-701_OILMIST 油雾探测" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button
+                                                    Content="{Binding Eng701OilMist, Converter={StaticResource BoolToOnOffConverter}}"
+                                                    Command="{Binding InjectFaultCommand}"
+                                                    CommandParameter="ENG-701_OILMIST" IsEnabled="{Binding IsRunning}"
+                                                    Background="{Binding Eng701OilMist, Converter={StaticResource BoolToValveConverter}}"
+                                                    Foreground="White" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 消防 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="消防系统" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="FD-702 火焰探测" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Fd702, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="FD-702"
+                                                        Background="{Binding Fd702, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="FD-703 烟感探测" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Fd703, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="FD-703"
+                                                        Background="{Binding Fd703, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 加注 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="加注系统" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="LS-501 加注泄漏" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Ls501, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="LS-501"
+                                                        Background="{Binding Ls501, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ESD-501 加注ESD" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Esd501, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="ESD-501"
+                                                        Background="{Binding Esd501, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 双壁管泄漏 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="双壁管泄漏" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="LS-101A 双壁管1" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}" 
+                                                        Content="{Binding Ls101a, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="LS-101A"
+                                                        Background="{Binding Ls101a, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="LS-201A 双壁管2" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Ls201a, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="LS-201A"
+                                                        Background="{Binding Ls201a, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- ESD -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="紧急停车" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <Grid ColumnDefinitions="*,*,*" Margin="0,10,0,0">
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ESD-001 驾驶室" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Esd001, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="ESD-001"
+                                                        Background="{Binding Esd001, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ESD-002 集控室" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Esd002, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="ESD-002"
+                                                        Background="{Binding Esd002, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="ESD-003 机旁" Foreground="#aaa"
+                                                           VerticalAlignment="Center" />
+                                                <Button IsEnabled="{Binding IsRunning}"
+                                                        Content="{Binding Esd003, Converter={StaticResource BoolToOnOffConverter}}"
+                                                        Command="{Binding InjectFaultCommand}" CommandParameter="ESD-003"
+                                                        Background="{Binding Esd003, Converter={StaticResource BoolToValveConverter}}"
+                                                        Foreground="White" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 清除所有故障 -->
+                                <Button Content="清除所有故障" Command="{Binding ClearAllFaultsCommand}"
+                                        Background="#f44336" Foreground="White" HorizontalAlignment="Center"
+                                        Padding="20,10" FontWeight="Bold" IsEnabled="{Binding IsRunning}"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <!-- Tab 4: I/O 监控 -->
+                    <TabItem Header="I/O 监控">
+                        <ScrollViewer Background="#252538">
+                            <StackPanel Spacing="15" Margin="15">
+                                <!-- 趋势图 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBlock Grid.Column="0" Text="AI 趋势图" FontWeight="Bold" Foreground="White" FontSize="14" VerticalAlignment="Center" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{Binding TrendSignalTags}" SelectedItem="{Binding SelectedTrendSignal}" Margin="10,0,0,0" />
+                                        </Grid>
+                                        <local:LiveTrendChart x:Name="MainTrendChart" Height="250" Margin="0,10,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- AI 信号 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+
+                                        <TextBlock Text="AI 信号" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <DataGrid ItemsSource="{Binding AiSignals}" AutoGenerateColumns="False"
+                                                  IsReadOnly="False" Background="#252538" Foreground="White"
+                                                  GridLinesVisibility="Horizontal" Margin="0,10,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="180" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="150" IsReadOnly="True" />
+                                                <DataGridTemplateColumn Header="值" Width="100">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBox Text="{Binding SignalValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                     Background="#1a1a2e" Foreground="White"
+                                                                     BorderBrush="#444" Padding="5,2" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTextColumn Header="单位" Binding="{Binding Unit}" Width="100" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="HH/H/L/LL"
+                                                                    Binding="{Binding AlarmThresholds}" Width="150" IsReadOnly="True" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- DI 信号 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="DI 信号" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <DataGrid ItemsSource="{Binding DiSignals}" AutoGenerateColumns="False"
+                                                  IsReadOnly="True" Background="#252538" Foreground="White"
+                                                  GridLinesVisibility="Horizontal" Margin="0,10,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="180" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="180" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="状态" Binding="{Binding DisplayValue}"
+                                                                    Width="80" IsReadOnly="True" />
+                                                <DataGridTemplateColumn Header="操作" Width="100">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Content="切换"
+                                                                    Command="{Binding DataContext.ToggleDiCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                    CommandParameter="{Binding Tag}"
+                                                                    IsEnabled="{Binding DataContext.IsRunning, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                    FontSize="11" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- DO 信号 -->
+                                <Border Background="#2d2d44" CornerRadius="8" Padding="12">
+                                    <StackPanel>
+                                        <TextBlock Text="DO 信号" FontWeight="Bold" Foreground="White" FontSize="14" />
+                                        <DataGrid ItemsSource="{Binding DoSignals}" AutoGenerateColumns="False"
+                                                  IsReadOnly="True" Background="#252538" Foreground="White"
+                                                  GridLinesVisibility="Horizontal" Margin="0,10,0,0">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="180" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="180" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="状态" Binding="{Binding DisplayValue}"
+                                                                    Width="80" IsReadOnly="True" />
+                                                <DataGridTemplateColumn Header="操作" Width="100">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Button Content="切换"
+                                                                    Command="{Binding DataContext.ToggleDoCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                    CommandParameter="{Binding Tag}"
+                                                                    IsEnabled="{Binding DataContext.IsRunning, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                                    FontSize="11" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+
+            <!-- 右侧：ESD 面板 -->
+            <Border Grid.Column="2" Background="#2d2d44" CornerRadius="8" Padding="15" Margin="0,0,10,10">
+                <StackPanel>
+                    <TextBlock Text="紧急停车" FontWeight="Bold" Foreground="White" FontSize="16"
+                               HorizontalAlignment="Center" Margin="0,0,0,20" />
+
+                    <Border Background="#3d1a1a" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                        <StackPanel Spacing="15" HorizontalAlignment="Center">
+                            <Ellipse Fill="{Binding EsdActive, Converter={StaticResource BoolToStatusConverter}}"
+                                     Width="60" Height="60" HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding EsdActive, Converter={StaticResource BoolToEsdTextConverter}}"
+                                       Foreground="White" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Spacing="10">
+                        <Button Content="ESD-001 驾驶室" Command="{Binding InjectFaultCommand}" CommandParameter="ESD-001"
+                                Background="{Binding Esd001, Converter={StaticResource BoolToValveConverter}}"
+                                IsEnabled="{Binding IsRunning}"
+                                Foreground="White" HorizontalAlignment="Stretch" Padding="10" />
+                        <Button Content="ESD-002 集控室" Command="{Binding InjectFaultCommand}" CommandParameter="ESD-002"
+                                Background="{Binding Esd002, Converter={StaticResource BoolToValveConverter}}"
+                                IsEnabled="{Binding IsRunning}"
+                                Foreground="White" HorizontalAlignment="Stretch" Padding="10" />
+                        <Button Content="ESD-003 机旁" Command="{Binding InjectFaultCommand}" CommandParameter="ESD-003"
+                                Background="{Binding Esd003, Converter={StaticResource BoolToValveConverter}}"
+                                IsEnabled="{Binding IsRunning}"
+                                Foreground="White" HorizontalAlignment="Stretch" Padding="10" />
+                    </StackPanel>
+
+                    <!--<Button Content="复位所有 ESD" Command="{Binding ResetCommand}"
+                            Background="#ff9800" Foreground="White" HorizontalAlignment="Stretch"
+                            Padding="10" Margin="0,20,0,0" FontWeight="Bold" />-->
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 底部状态栏 -->
+        <Border Grid.Row="2" Background="#2d2d44" Padding="10">
+            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
+                    <TextBlock Text="系统状态:" Foreground="#aaa" />
+                    <TextBlock Text="{Binding IsRunning, Converter={StaticResource BoolToRunningTextConverter}}"
+                               Foreground="White" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5" Margin="20,0,0,0">
+                    <TextBlock Text="模式:" Foreground="#aaa" />
+                    <TextBlock Text="{Binding Mode}" Foreground="White" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5" Margin="20,0,0,0">
+                    <TextBlock Text="扫描:" Foreground="#aaa" />
+                    <TextBlock Text="500ms" Foreground="White" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="5" Margin="20,0,0,0">
+                    <TextBlock Text="未确认报警:" Foreground="#aaa" />
+                    <TextBlock Text="{Binding UnacknowledgedCount}" Foreground="Red" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="5" Margin="20,0,0,0">
+                    <TextBlock Text="已触发连锁:" Foreground="#aaa" />
+                    <TextBlock Text="3/17" Foreground="White" FontWeight="Bold" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

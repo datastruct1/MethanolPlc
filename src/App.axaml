@@ -1,0 +1,34 @@
+﻿<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Methanol_PLC.App"
+             xmlns:local="using:Methanol_PLC"
+             xmlns:converters="using:Methanol_PLC.Converters"
+             RequestedThemeVariant="Dark">
+
+    <Application.Resources>
+        <converters:BoolToStatusConverter x:Key="BoolToStatusConverter"/>
+        <converters:BoolToRunningTextConverter x:Key="BoolToRunningTextConverter"/>
+        <converters:BoolToOnOffConverter x:Key="BoolToOnOffConverter"/>
+        <converters:BoolToValveConverter x:Key="BoolToValveConverter"/>
+        <converters:BoolToEsdTextConverter x:Key="BoolToEsdTextConverter"/>
+        <converters:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
+        <converters:BoolToStartStopTextConverter x:Key="BoolToStartStopTextConverter"/>
+        <converters:BoolToStartStopBgConverter x:Key="BoolToStartStopBgConverter"/>
+        <converters:BoolToAlarmBgConverter x:Key="BoolToAlarmBgConverter"/>
+        <converters:BoolToAlarmFlashConverter x:Key="BoolToAlarmFlashConverter"/>
+        <converters:BoolToAlarmItemBgConverter x:Key="BoolToAlarmItemBgConverter"/>
+        <converters:BoolToAlarmStatusConverter x:Key="BoolToAlarmStatusConverter"/>
+        <converters:BoolToConfirmTextConverter x:Key="BoolToConfirmTextConverter"/>
+        <converters:BoolToConfirmBgConverter x:Key="BoolToConfirmBgConverter"/>
+        <converters:BoolToInvertedVisConverter x:Key="BoolToInvertedVisConverter"/>
+    </Application.Resources>
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+    </Application.Styles>
+</Application>

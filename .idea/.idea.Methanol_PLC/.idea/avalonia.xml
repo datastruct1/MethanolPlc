@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Methanol_PLC/App.axaml" value="Methanol_PLC/Methanol_PLC.csproj" />
+        <entry key="Methanol_PLC/Views/Controls/AlarmPanel.axaml" value="Methanol_PLC/Methanol_PLC.csproj" />
+        <entry key="Methanol_PLC/Views/Controls/ProcessFlowDiagram.axaml" value="Methanol_PLC/Methanol_PLC.csproj" />
+        <entry key="Methanol_PLC/Views/MainView.axaml" value="Methanol_PLC/Methanol_PLC.csproj" />
+        <entry key="Methanol_PLC/Views/MainWindow.axaml" value="Methanol_PLC/Methanol_PLC.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
