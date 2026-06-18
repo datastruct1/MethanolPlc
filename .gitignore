@@ -1,0 +1,27 @@
+# Build results
+bin/
+obj/
+[Rr]elease/
+[Dd]ebug/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE
+.idea/
+*.DotSettings.user
+
+# Packages
+packages/
+
+# Publish
+Publish/
+Setup/
+
+# OS
+.DS_Store
+Thumbs.db
