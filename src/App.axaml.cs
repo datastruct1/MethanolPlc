@@ -20,12 +20,18 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
+            // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainView()
             {
                 DataContext = new MainViewModel(),
+            };
+
+            // 程序退出时确保释放 Modbus 端口
+            desktop.Exit += (_, _) =>
+            {
+                (desktop.MainWindow.DataContext as MainViewModel)?.Cleanup();
             };
         }
 

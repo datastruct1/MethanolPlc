@@ -24,12 +24,14 @@ C:\Users\Administrator\.nuget\packages\avalonia.win32\11.3.2\lib\net8.0\Avalonia
 C:\Users\Administrator\.nuget\packages\avalonia.win32\11.3.2\lib\net8.0\Avalonia.Win32.dll
 C:\Users\Administrator\.nuget\packages\avalonia.x11\11.3.2\lib\net8.0\Avalonia.X11.dll
 C:\Users\Administrator\.nuget\packages\communitytoolkit.mvvm\8.2.1\lib\net6.0\CommunityToolkit.Mvvm.dll
+C:\Users\Administrator\.nuget\packages\fluentmodbus\5.3.2\lib\netstandard2.1\FluentModbus.dll
 C:\Users\Administrator\.nuget\packages\harfbuzzsharp\8.3.1.1\lib\net8.0\HarfBuzzSharp.dll
 C:\Users\Administrator\.nuget\packages\livechartscore\2.0.4\lib\net8.0\LiveChartsCore.dll
 C:\Users\Administrator\.nuget\packages\livechartscore.skiasharpview.avalonia\2.0.4\lib\net8.0\LiveChartsCore.SkiaSharpView.Avalonia.dll
 C:\Users\Administrator\.nuget\packages\livechartscore.skiasharpview\2.0.4\lib\net8.0\LiveChartsCore.SkiaSharpView.dll
 C:\Users\Administrator\.nuget\packages\microcom.runtime\0.11.0\lib\net5.0\MicroCom.Runtime.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\Microsoft.CSharp.dll
+C:\Users\Administrator\.nuget\packages\microsoft.extensions.logging.abstractions\5.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\Microsoft.VisualBasic.Core.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\Microsoft.VisualBasic.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\Microsoft.Win32.Primitives.dll
@@ -91,6 +93,7 @@ C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\System.IO.Pipelines.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\System.IO.Pipes.AccessControl.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\System.IO.Pipes.dll
+C:\Users\Administrator\.nuget\packages\system.io.ports\5.0.0\ref\netstandard2.0\System.IO.Ports.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\System.IO.UnmanagedMemoryStream.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\System.Linq.dll
 C:\Users\Administrator\.nuget\packages\microsoft.netcore.app.ref\9.0.17\ref\net9.0\System.Linq.Expressions.dll

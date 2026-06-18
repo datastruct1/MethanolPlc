@@ -17,6 +17,7 @@ public partial class MainViewModel : ViewModelBase
     private readonly PlcEngine _engine;
     private readonly System.Timers.Timer _uiTimer;
     private readonly ObservableCollection<AlarmEvent> _alarms = new();
+    private readonly ModbusSlave _modbus;
     private bool _isUpdatingAlarms = false;
 
     [ObservableProperty] private bool _isRunning;
@@ -111,7 +112,17 @@ public partial class MainViewModel : ViewModelBase
         _ioTable = new IoTable();
         _ioTable.Initialize();
         _engine = new PlcEngine(_ioTable);
+        
         _engine.Alarms.CollectionChanged += OnAlarmsCollectionChanged;
+
+        // 启动 Modbus Slave
+        _modbus = new ModbusSlave(_ioTable, _engine);
+        _modbus.Start(2580);
+
+        // 每 300ms 同步 IO 到 Modbus 缓冲区
+        var syncTimer = new System.Timers.Timer(300);
+        syncTimer.Elapsed += (_, _) => _modbus.SyncBuffers();
+        syncTimer.Start();
 
         // 初始化趋势图信号标签列表
         _trendSignalTags = new ObservableCollection<string>(
@@ -142,10 +153,7 @@ public partial class MainViewModel : ViewModelBase
         _alarmFlashTimer = new System.Timers.Timer(500);
         _alarmFlashTimer.Elapsed += (_, _) =>
         {
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                AlarmFlashState = !AlarmFlashState;
-            });
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => { AlarmFlashState = !AlarmFlashState; });
         };
 
         LoadRules();
@@ -153,7 +161,8 @@ public partial class MainViewModel : ViewModelBase
         RefreshAll();
     }
 
-    private void OnAlarmsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void OnAlarmsCollectionChanged(object? sender,
+        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         // 只检测是否有新报警，不修改集合
         // 集合同步在 RefreshAll() 中处理
@@ -168,7 +177,7 @@ public partial class MainViewModel : ViewModelBase
                     break;
                 }
             }
-            
+
             if (hasNewAlarm)
             {
                 HasNewAlarm = true;
@@ -176,7 +185,7 @@ public partial class MainViewModel : ViewModelBase
                 _alarmFlashTimer.Start();
             }
         }
-        
+
         UpdateUnacknowledgedCount();
     }
 
@@ -264,7 +273,7 @@ public partial class MainViewModel : ViewModelBase
         foreach (var vm in AiSignals) vm.Refresh();
         foreach (var vm in DiSignals) vm.Refresh();
         foreach (var vm in DoSignals) vm.Refresh();
-        
+
         // 同步报警集合
         SyncAlarms();
 
@@ -308,21 +317,21 @@ public partial class MainViewModel : ViewModelBase
         // 切换信号时通知 UI 更新
         OnPropertyChanged(nameof(GetTrendData));
     }
-    
+
     private void SyncAlarms()
     {
         // 使用 Tag + Level 作为唯一标识
         var engineAlarms = _engine.Alarms.ToList();
         var engineKeys = new HashSet<string>(engineAlarms.Select(a => $"{a.Tag}_{a.Level}"));
         var localKeys = new HashSet<string>(_alarms.Select(a => $"{a.Tag}_{a.Level}"));
-        
+
         // 移除本地集合中不在引擎集合中的报警（条件已消除）
         var toRemove = _alarms.Where(a => !engineKeys.Contains($"{a.Tag}_{a.Level}")).ToList();
         foreach (var alarm in toRemove)
         {
             _alarms.Remove(alarm);
         }
-        
+
         // 添加引擎集合中不在本地集合中的报警（新报警）
         foreach (var engineAlarm in engineAlarms)
         {
@@ -333,7 +342,7 @@ public partial class MainViewModel : ViewModelBase
                 _alarms.Add(engineAlarm);
             }
         }
-        
+
         UpdateUnacknowledgedCount();
     }
 
@@ -362,7 +371,6 @@ public partial class MainViewModel : ViewModelBase
     }
 
 
-
     [RelayCommand]
     private void AcknowledgeAlarm(int index)
     {
@@ -378,10 +386,12 @@ public partial class MainViewModel : ViewModelBase
         {
             alarm.Acknowledged = true;
         }
+
         foreach (var alarm in _alarms)
         {
             alarm.Acknowledged = true;
         }
+
         UpdateUnacknowledgedCount();
         HasNewAlarm = false;
     }
@@ -413,12 +423,14 @@ public partial class MainViewModel : ViewModelBase
         {
             _engine.Alarms.Remove(alarm);
         }
+
         // 同步到本地集合
         var localAcknowledged = _alarms.Where(a => a.Acknowledged).ToList();
         foreach (var alarm in localAcknowledged)
         {
             _alarms.Remove(alarm);
         }
+
         UpdateUnacknowledgedCount();
     }
 
@@ -428,16 +440,16 @@ public partial class MainViewModel : ViewModelBase
         if (alarm != null && !alarm.Acknowledged)
         {
             alarm.Acknowledged = true;
-            
+
             // 同步到引擎中的报警对象
             var engineAlarm = _engine.Alarms.FirstOrDefault(a => a.Tag == alarm.Tag && a.Level == alarm.Level);
             if (engineAlarm != null)
             {
                 engineAlarm.Acknowledged = true;
             }
-            
+
             UpdateUnacknowledgedCount();
-            
+
             // 如果所有报警都已确认，停止声光
             if (!_alarms.Any(a => !a.Acknowledged))
             {
@@ -520,6 +532,11 @@ public partial class MainViewModel : ViewModelBase
             _ioTable.SetValue(signal.Tag, false);
         _engine.Scan();
         RefreshAll();
+    }
+
+    public void Cleanup()
+    {
+        _modbus?.Stop();
     }
 
     private void UpdateUnacknowledgedCount() =>
