@@ -9,17 +9,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5b915d28-733d-43fc-b7b0-a631a1089db3" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.src.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.src.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/ModbusSlave.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ModbusSlave.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfoInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/apphost.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/apphost.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/ref/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/ref/Methanol_PLC.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/refint/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/refint/Methanol_PLC.dll" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +104,7 @@
       <option name="presentableId" value="Default" />
       <updated>1781742486609</updated>
       <workItem from="1781742488731" duration="19872000" />
-      <workItem from="1782087529428" duration="20158000" />
+      <workItem from="1782087529428" duration="23091000" />
     </task>
     <task id="LOCAL-00001" summary="增加modbus协议，将此改造为modbus_slave，连接modbus_poll">
       <option name="closed" value="true" />
@@ -133,7 +122,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782108505611</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="modbus写操作也完成">
+      <option name="closed" value="true" />
+      <created>1782113091394</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1782113091394</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -145,7 +142,8 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="增加modbus协议，将此改造为modbus_slave，连接modbus_poll" />
     <MESSAGE value="实现Modbus的读操作，AI模拟量完全可以读，DI开关量有一些不能读，也许是在IoSignal或者PlcEngine中没能定义到。" />
-    <option name="LAST_COMMIT_MESSAGE" value="实现Modbus的读操作，AI模拟量完全可以读，DI开关量有一些不能读，也许是在IoSignal或者PlcEngine中没能定义到。" />
+    <MESSAGE value="modbus写操作也完成" />
+    <option name="LAST_COMMIT_MESSAGE" value="modbus写操作也完成" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
