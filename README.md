@@ -1,4 +1,5 @@
 基于AvaloniaUI的燃料供应系统PLC模拟器
+后续引入Modbus通信
 
 ## 简介
 
