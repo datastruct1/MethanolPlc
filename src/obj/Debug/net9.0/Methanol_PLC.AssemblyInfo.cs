@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Methanol_PLC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf2b8b8d8cb3dbeb54af15355ab9995da81a78ae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ef69db9992355498db3fb135cef44d02c2947701")]
 [assembly: System.Reflection.AssemblyProductAttribute("Methanol_PLC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Methanol_PLC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

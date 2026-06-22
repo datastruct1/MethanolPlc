@@ -26,7 +26,7 @@ public partial class IoSignalViewModel : ObservableObject
 
     public string SignalValue
     {
-        get => _signal.Value?.ToString() ?? "0";
+        get => _signal.Value is float f ? f.ToString("F2") : (_signal.Value?.ToString() ?? "0");
         set
         {
             if (float.TryParse(value, out float floatVal) && _signal.Value != (object?)floatVal)
@@ -35,7 +35,6 @@ public partial class IoSignalViewModel : ObservableObject
                 _engine.Scan();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(DisplayValue));
-                
             }
         }
     }
@@ -51,7 +50,7 @@ public partial class IoSignalViewModel : ObservableObject
 
     private static string FormatValue(object? value) => value switch
     {
-        float f => f.ToString("F1"),
+        float f => f.ToString("F2"),
         bool b => b ? "ON" : "OFF",
         _ => value?.ToString() ?? "-"
     };

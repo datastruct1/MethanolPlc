@@ -8,35 +8,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b915d28-733d-43fc-b7b0-a631a1089db3" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Services/ModbusSlave.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../NuGet.Config" beforeDir="false" afterPath="$PROJECT_DIR$/../NuGet.Config" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.src.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.src.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/App.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Methanol_PLC.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Methanol_PLC.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/ModbusSlave.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ModbusSlave.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ViewModels/IoSignalViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ViewModels/IoSignalViewModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ViewModels/MainViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ViewModels/MainViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.deps.json" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.deps.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Views/MainView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/Views/MainView.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Avalonia/Resources.Inputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Avalonia/Resources.Inputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Avalonia/references" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Avalonia/references" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Avalonia/resources" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Avalonia/resources" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.AssemblyInfoInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.csproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.csproj.FileListAbsolute.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/Methanol_PLC.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/apphost.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/apphost.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/ref/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/ref/Methanol_PLC.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net9.0/refint/Methanol_PLC.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net9.0/refint/Methanol_PLC.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Methanol_PLC.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Methanol_PLC.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/project.nuget.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/project.packagespec.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,25 +45,29 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "datastruct1"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;datastruct1&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/datastruct1/MethanolPlc.git",
-    "accountId": "d1af11d3-f110-4dfb-bb56-e19824a32cd0"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/datastruct1/MethanolPlc.git&quot;,
+    &quot;accountId&quot;: &quot;d1af11d3-f110-4dfb-bb56-e19824a32cd0&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ba03229b8197450d925e741b560ee852e8e920/06/030784f8/Func`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e09723564bef53e626096c0a8a6eafa4e566b68557f2b9d7660885472ed9/ModbusServer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/eca66eabdfbc5dfddabb78aee2a478c2d7b4c945f342f542fca34bfc488/ModbusTcpServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Services/IoTable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/bin/Debug/net9.0/Methanol_PLC.deps.json" root0="SKIP_HIGHLIGHTING" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="3FHqkd7bmoh1JNHqQ7aNoniNTpU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -83,6 +78,7 @@
     ".NET 项目.Methanol_PLC.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "copilot.chat.legacySessionMetadata.migrated": "true",
     "git-widget-placeholder": "main",
     "node.js.detected.package.eslint": "true",
@@ -126,16 +122,29 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1781742486609</updated>
-      <workItem from="1781742488731" duration="19553000" />
+      <workItem from="1781742488731" duration="19872000" />
+      <workItem from="1782087529428" duration="15856000" />
     </task>
+    <task id="LOCAL-00001" summary="增加modbus协议，将此改造为modbus_slave，连接modbus_poll">
+      <option name="closed" value="true" />
+      <created>1781773044925</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1781773044925</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="增加modbus协议，将此改造为modbus_slave，连接modbus_poll" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加modbus协议，将此改造为modbus_slave，连接modbus_poll" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -67,7 +67,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="流量:" Foreground="#aaa" FontSize="11" />
-                                    <TextBlock Text="{Binding Fit501Flow, StringFormat='{}{0:F1} L/min'}"
+                                    <TextBlock Text="{Binding Fit501Flow, StringFormat='{}{0:F2} L/min'}"
                                                Foreground="White" FontWeight="Bold" />
                                 </StackPanel>
                             </Grid>
@@ -120,7 +120,7 @@
 
                                 <!-- 左下：液位百分比 -->
                                 <TextBlock Grid.Row="2" Grid.Column="0"
-                                           Text="{Binding Lt101, StringFormat='{}{0:F1}%'}"
+                                           Text="{Binding Lt101, StringFormat='{}{0:F2}%'}"
                                            Foreground="White" HorizontalAlignment="Left"
                                            Margin="0,0,8,0" />
 
@@ -128,14 +128,14 @@
                                 <!-- 右上：参数信息（液位、压力、O₂） -->
                                 <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="4,0,0,0">
                                     <TextBlock Text="LT101:" Foreground="#aaa" FontSize="11"/>
-                                    <TextBlock Text="{Binding Lt101, StringFormat='{}{0:F1}%'}" 
+                                    <TextBlock Text="{Binding Lt101, StringFormat='{}{0:F2}%'}"
                                                Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
                                     <TextBlock Text="压力:" Foreground="#aaa" FontSize="11" />
                                     <TextBlock Text="{Binding Pt101, StringFormat='{}{0:F2}MPa'}"
                                                Foreground="White" FontSize="12" FontWeight="Bold" Margin="0,0,0,8" />
 
                                     <TextBlock Text="O₂:" Foreground="#aaa" FontSize="11" />
-                                    <TextBlock Text="{Binding Ot101, StringFormat='{}{0:F1}%'}"
+                                    <TextBlock Text="{Binding Ot101, StringFormat='{}{0:F2}%'}"
                                                Foreground="White" FontWeight="Bold" />
                                     <Button Grid.Column="0" Content="主阀" IsEnabled="{Binding IsRunning}"
                                             Command="{Binding ToggleValveCommand}" CommandParameter="XV-101"
@@ -183,7 +183,7 @@
 
                                 <!-- 左下：液位百分比 -->
                                 <TextBlock Grid.Row="2" Grid.Column="0"
-                                           Text="{Binding Lt201, StringFormat='{}{0:F1}%'}"
+                                           Text="{Binding Lt201, StringFormat='{}{0:F2}%'}"
                                            Foreground="White" HorizontalAlignment="Left"
                                            Margin="0,0,8,0" />
 
@@ -191,14 +191,14 @@
                                 <!-- 右上：参数信息（液位、压力、O₂） -->
                                 <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="4,0,0,0">
                                     <TextBlock Text="LT201:" Foreground="#aaa" FontSize="11"/>
-                                    <TextBlock Text="{Binding Lt201, StringFormat='{}{0:F1}%'}" 
+                                    <TextBlock Text="{Binding Lt201, StringFormat='{}{0:F2}%'}"
                                                Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
                                     <TextBlock Text="压力:" Foreground="#aaa" FontSize="11" />
                                     <TextBlock Text="{Binding Pt201, StringFormat='{}{0:F2}MPa'}"
                                                Foreground="White" FontSize="12" FontWeight="Bold" Margin="0,0,0,8" />
 
                                     <TextBlock Text="O₂:" Foreground="#aaa" FontSize="11" />
-                                    <TextBlock Text="{Binding Ot201, StringFormat='{}{0:F1}%'}"
+                                    <TextBlock Text="{Binding Ot201, StringFormat='{}{0:F2}%'}"
                                                Foreground="White" FontWeight="Bold" />
                                     <Button Grid.Column="0" Content="主阀" IsEnabled="{Binding IsRunning}"
                                             Command="{Binding ToggleValveCommand}" CommandParameter="XV-201"

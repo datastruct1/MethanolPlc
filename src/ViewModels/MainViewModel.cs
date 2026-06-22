@@ -117,11 +117,22 @@ public partial class MainViewModel : ViewModelBase
 
         // 启动 Modbus Slave
         _modbus = new ModbusSlave(_ioTable, _engine);
-        _modbus.Start(2580);
+        _modbus.Start(65532);
+        _modbus.EnableWriteHandling();
 
-        // 每 300ms 同步 IO 到 Modbus 缓冲区
-        var syncTimer = new System.Timers.Timer(300);
-        syncTimer.Elapsed += (_, _) => _modbus.SyncBuffers();
+        // 每 500ms 同步 IO 到 Modbus 缓冲区（使用 DispatcherTimer 确保线程安全）
+        var syncCount = 0;
+        var syncTimer = new Avalonia.Threading.DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(500)
+        };
+        syncTimer.Tick += (_, _) =>
+        {
+            _modbus.SyncBuffers();
+            syncCount++;
+            if (syncCount % 10 == 0)  // 每 5 秒输出一次
+                Console.WriteLine($"SyncBuffers called {syncCount} times");
+        };
         syncTimer.Start();
 
         // 初始化趋势图信号标签列表
