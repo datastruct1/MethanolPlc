@@ -286,6 +286,7 @@ public class PlcEngine
             "LS-201A" => GetBool("LS-201A"),
             "LS-501" => GetBool("LS-501"),
             "ESD-501" => GetBool("ESD-501"),
+            "ESD-502" => GetBool("ESD-502"),
             _ => false
         };
     }

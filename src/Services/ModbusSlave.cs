@@ -21,6 +21,9 @@ public class ModbusSlave : IDisposable
     private readonly Dictionary<ushort, string> _coilMap = new();
     private readonly Dictionary<ushort, string> _discreteInputMap = new();
 
+    private readonly Dictionary<ushort, ushort> _lastHoldingValues = new();
+    private readonly Dictionary<ushort, byte> _lastCoilValues = new();
+
     public ModbusSlave(IoTable table, PlcEngine engine)
     {
         _table = table;
@@ -33,9 +36,11 @@ public class ModbusSlave : IDisposable
         ushort addr;
 
         addr = 0;
-        _holdingRegisterMap[addr++] = "ENG-601_MODE";
-        _holdingRegisterMap[addr++] = "ENG-701_MODE";
-
+        foreach (var tag in new[]{"ENG-601_MODE", "ENG-701_MODE",})
+        {
+            //模拟量可读写
+            _holdingRegisterMap[addr++] = tag;
+        }
         addr = 0;
         foreach (var tag in new[]
                  {
@@ -44,6 +49,7 @@ public class ModbusSlave : IDisposable
                      "ENG-601_MODE", "ENG-701_MODE", "AIT-401"
                  })
         {
+            //只读模拟量
             _inputRegisterMap[addr++] = tag;
         }
 
@@ -59,6 +65,7 @@ public class ModbusSlave : IDisposable
                      "XV-705", "XV-706", "PUMP-702"
                  })
         {
+            //开关量可读写
             _coilMap[addr++] = tag;
         }
 
@@ -74,6 +81,7 @@ public class ModbusSlave : IDisposable
                      "ENG-701_FLAME", "ENG-701_OILMIST", "ENG-701_FB"
                  })
         {
+            //只读开关量
             _discreteInputMap[addr++] = tag;
         }
     }
@@ -111,10 +119,14 @@ public class ModbusSlave : IDisposable
                         proc.WaitForExit(3000);
                     }
                 }
-                catch { }
+                catch
+                {
+                }
             }
         }
-        catch { }
+        catch
+        {
+        }
     }
 
     public void Start(int port = 502)
@@ -167,7 +179,11 @@ public class ModbusSlave : IDisposable
                                 _server.Update();
                             }
                         }
-                        catch { break; }
+                        catch
+                        {
+                            break;
+                        }
+
                         Thread.Sleep(1);
                     }
                 });
@@ -188,26 +204,39 @@ public class ModbusSlave : IDisposable
     {
         if (_server == null) return;
 
-        // === Holding Register：双向同步（大端序） ===
+        // Holding Register：双向同步（大端序）
         var holdingBytes = _server.GetHoldingRegisterBuffer(1);
         foreach (var (addr, tag) in _holdingRegisterMap)
         {
             if (_table.Signals.TryGetValue(tag, out var signal) && signal.Value is float ioValue)
             {
+                //读取Modbus当前值 大端序
+                ushort modbusValue = (ushort)(holdingBytes[addr * 2] << 8 | holdingBytes[addr * 2 + 1]);
+                // 加这行调试
+                Console.WriteLine($"[HR-{addr}] {tag}: modbus={modbusValue}, ioTable={ioValue:F2}, lastVal={_lastHoldingValues.GetValueOrDefault(addr)}");
+                //检查是否被远程写入
+                if (_lastHoldingValues.TryGetValue(addr, out ushort lastVal) && modbusValue != lastVal)
+                {
+                    //Modbus端被写入了新值，同步到IoTable
+                    _table.SetValue(tag, (short)modbusValue / 100.0f);
+                }
+
+                //把值写入Modbus
                 short ioValueScaled = (short)(ioValue * 100);
-                holdingBytes[addr * 2] = (byte)(ioValueScaled >> 8);   // 高字节
-                holdingBytes[addr * 2 + 1] = (byte)(ioValueScaled & 0xFF); // 低字节
+                holdingBytes[addr * 2] = (byte)(ioValueScaled >> 8);
+                holdingBytes[addr * 2 + 1] = (byte)(ioValueScaled & 0xFF);
+                _lastHoldingValues[addr] = (ushort)ioValueScaled;
             }
         }
 
-        // === Input Register：单向写入（大端序） ===
+        // Input Register：单向写入（大端序）
         var inputBytes = _server.GetInputRegisterBuffer(1);
         foreach (var (addr, tag) in _inputRegisterMap)
         {
             if (_table.Signals.TryGetValue(tag, out var signal) && signal.Value is float f)
             {
                 short scaled = (short)(f * 100);
-                inputBytes[addr * 2] = (byte)(scaled >> 8);   // 高字节
+                inputBytes[addr * 2] = (byte)(scaled >> 8); // 高字节
                 inputBytes[addr * 2 + 1] = (byte)(scaled & 0xFF); // 低字节
             }
         }
@@ -217,7 +246,20 @@ public class ModbusSlave : IDisposable
         {
             if (_table.Signals.TryGetValue(tag, out var signal) && signal.Value is bool b)
             {
+                byte modbusValue = coils[addr];
+
+                // 检查是否被远程写入
+                if (_lastCoilValues.TryGetValue(addr, out byte lastVal) && modbusValue != lastVal)
+                {
+                    // Modbus 端被写入了新值，同步回 IoTable
+                    _table.SetValue(tag, modbusValue == 1);
+                }
+
+                // 把 IoTable 最新值写入 Modbus
                 coils[addr] = (byte)(b ? 1 : 0);
+
+                // 记录本次值
+                _lastCoilValues[addr] = coils[addr];
             }
         }
 
@@ -229,6 +271,7 @@ public class ModbusSlave : IDisposable
                 discreteInputs[addr] = (byte)(b ? 1 : 0);
             }
         }
+
 
         lock (_server.Lock)
         {
@@ -257,5 +300,4 @@ public class ModbusSlave : IDisposable
     }
 
     public void Dispose() => Stop();
-
 }
